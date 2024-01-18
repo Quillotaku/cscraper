@@ -8,7 +8,7 @@ url = f"https://vwc.cinesa.es/WSVistaWebClient/ocapi/v1/showtimes/by-business-da
 cines_ids = {}
 headers = {}
 films = []
-shotime = []
+showtime = []
 with open("cines.json", "r") as f:
     cines_ids = json.load(f)
 with open("headers.json", "r") as f:
@@ -22,7 +22,7 @@ response = requests.request("GET", url, headers=headers, params=querystring)
 response = response.content.decode('utf-8')
 response = json.loads(response)
 
-# loop throught films
+# loop through films
 films_len = len(response["relatedData"]["films"])
 for f in range(0,films_len):
     films.append(
@@ -33,9 +33,9 @@ for f in range(0,films_len):
         }
     )
 
-shotime_len = len(response["showtimes"])
-for s in range(0,shotime_len):
-    shotime.append(
+showtime_len = len(response["showtimes"])
+for s in range(0,showtime_len):
+    showtime.append(
         {
             "id":f"{response['showtimes'][s]['filmId']}",
             "Session":f"{response['showtimes'][s]['schedule']['startsAt'].split('T')[1].split('+')[0]}",
@@ -43,7 +43,7 @@ for s in range(0,shotime_len):
     )
 
 df = pd.json_normalize(films)
-df2 = pd.json_normalize(shotime)
+df2 = pd.json_normalize(showtime)
 df = df.merge(df2, on="id")
 df = df.drop(columns=["id"])
 df.to_csv(f"{sys.argv[1]}_{sys.argv[2]}.csv", index=False)
